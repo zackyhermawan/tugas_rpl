@@ -1,72 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Riwayat Aduan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
 </head>
-<body>
+<body class="bg-gray-50">
 
-    <section class="w-full flex min-h-screen h-auto">
-        <div class="bg-slate-800 flex w-72 rounded-r-xl">
-            <nav class="flex flex-col w-full py-5 px-4 text-white">
-                <div class="flex mb-5 gap-3">
-                    <img src="assets/logo_Basdat.png" class="w-11 h-11">
-                    <h1 class="text-4xl">Sidebar</h1>
-                </div>
+  <section class="flex flex-col md:flex-row min-h-screen">
+    <!-- MODAL -->
+    <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white w-[90%] max-w-xl max-h-[90vh] overflow-y-auto rounded-lg p-6 relative">
+            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-600 hover:text-black text-2xl">&times;</button>
+            
+            <h2 class="text-xl font-semibold mb-4">Detail Aduan</h2>
 
-                <ul class="flex flex-col gap-4">
-                    <li><a class="flex font-medium text-[17px] px-4 py-2 rounded transition-all duration-200 hover:bg-[#E5E7EB] hover:text-slate-800" href="#">Beranda</a></li>
-                    <li><a class="flex font-medium text-[17px] px-4 py-2 rounded transition-all duration-200 hover:bg-[#E5E7EB] hover:text-slate-800" href="aduan.html">Aduan</a></li>
-                    <li><a class="flex font-medium text-[17px] px-4 py-2 rounded transition-all duration-200 bg-[#E5E7EB] text-slate-800" href="riwayat_aduan.html">Riwayat</a></li>
-                </ul>
-            </nav>
-        </div>
-
-        <div class="text-center w-full flex flex-col gap-6 py-5 mt-5">
-            <h1 class="text-3xl font-semibold text-[#333446]">RIWAYAT ADUAN</h1>
-                <div class="p-6 w-full px-20">
-                    <h2 class="text-2xl text-start font-semibold mb-4 text-[#333446]">Daftar Pengaduan</h2>
-
-                    <div class="overflow-x-auto bg-white shadow-md rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-orange-600 text-white">
-                            <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">No</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Kategori</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Deskripsi</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Detail</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 text-start text-sm text-gray-700">
-                            <tr>
-                            <td class="px-6 py-4">1</td>
-                            <td class="px-6 py-4">Aduan</td>
-                            <td class="px-6 py-4">Kak di Deket rumah saya ituu ada tetangga saya yang sukanya bakar sampah dalam jumlah banyakk ya memang dia ngambilin sampahh wargaa tapi warga juga membayar tapi kok malah di bakarr di Deket rumahnya yaa soalnya mengganggu dann membuat pencemaran udara sekitar</td>
-                            <td class="px-6 py-4">
-                                <span class="inline-block px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-semibold">Diproses</span>
-                            </td>
-                            <td class="px-6 py-4"><i class="bi bi-eye text-xl inline-flex items-center justify-center bg-gray-200 w-12 h-8 rounded-full cursor-pointer"></i></td>
-                            </tr>
-                            <tr>
-                            <td class="px-6 py-4">2</td>
-                            <td class="px-6 py-4">Aduan</td>
-                            <td class="px-6 py-4">Selamat pagi pak/ibu, ijin menanyakan berkas pengajuan ijin operasional lembaga PAUD kami apakah sudah masuk?kami memasukkan di tanggal 5 Mei 2025, terima kasih</td>
-                            <td class="px-6 py-4">
-                                <span class="inline-block px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-semibold">Selesai</span>
-                            </td>
-                            <td class="px-6 py-4"><i class="bi bi-eye text-xl inline-flex items-center justify-center bg-gray-200 w-12 h-8 rounded-full cursor-pointer"></i></td>
-                            </tr>
-                        </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="space-y-3 text-left text-gray-700 text-sm">
+            <p><strong>Nama Lengkap:</strong> <span id="modalNama">John Doe</span></p>
+            <p><strong>Email:</strong> <span id="modalEmail">johndoe@example.com</span></p>
+            <p><strong>Nomor Telepon:</strong> <span id="modalTelepon">08123456789</span></p>
+            <p><strong>Kategori:</strong> <span id="modalKategori">Aduan</span></p>
+            <p><strong>Gambar:</strong></p>
+            <img id="modalGambar" src="https://via.placeholder.com/300x200" class="rounded border w-full max-h-60 object-cover" alt="Gambar Aduan">
+            <p><strong>Deskripsi:</strong></p>
+            <p id="modalDeskripsi" class="whitespace-pre-line leading-relaxed">Deskripsi panjang di sini...</p>
             </div>
         </div>
-    </section>
-    
+    </div>
+
+    <!-- Sidebar -->
+     <div class="bg-slate-800 w-full md:w-72 p-4 rounded-none md:rounded-r-xl">
+      <nav class="flex flex-col w-full md:py-5 py-2 px-4 text-white">
+        <div class="flex mb-5 gap-3 items-center">
+          <img src="assets/logo_Basdat.png" class="w-11 h-11">
+          <h1 class="md:text-3xl md:text-2xl font-semibold">Sidebar</h1>
+        </div>
+        <ul class="md:flex flex md:flex-col justify-center flex-row md:gap-4 gap-2">
+          <li><a class="flex md:border-none border border-gray-100/10 font-medium md:text-[17px] text-sm px-4 py-2 rounded transition-all duration-200 hover:bg-gray-200 hover:text-slate-800" href="#">Beranda</a></li>
+          <li><a class="flex md:border-none border border-gray-100/10 font-medium md:text-[17px] text-sm px-4 py-2 rounded transition-all duration-200 hover:bg-gray-200 hover:text-slate-800" href="aduan.html">Aduan</a></li>
+          <li><a class="flex md:border-none border border-gray-100/10 font-medium md:text-[17px] text-sm px-4 py-2 rounded transition-all duration-200 bg-gray-200 text-slate-800" href="riwayat_aduan.html">Riwayat</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-4 md:my-0 my-6 md:p-10 flex flex-col gap-6">
+      <h1 class="text-2xl md:text-3xl font-semibold text-[#333446] text-center">RIWAYAT ADUAN</h1>
+
+      <div class="w-full">
+        <h2 class="text-xl md:text-2xl font-semibold text-[#333446] mb-4 text-left">Daftar Pengaduan</h2>
+
+        <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+          <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <thead class="bg-orange-600 text-white">
+              <tr>
+                <th class="px-4 py-3 text-left font-medium uppercase tracking-wider">No</th>
+                <th class="px-4 py-3 text-left font-medium uppercase tracking-wider">Kategori</th>
+                <th class="px-4 flex py-3 text-left font-medium uppercase tracking-wider md:w-auto w-[500px]">Deskripsi</th>
+                <th class="px-4 py-3 text-left font-medium uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-left font-medium uppercase tracking-wider">Detail</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
+              <tr>
+                <td class="px-4 py-4">1</td>
+                <td class="px-4 py-4">Aduan</td>
+                <td class="px-4 py-4">
+                  Kak di Deket rumah saya ituu ada tetangga saya yang sukanya bakar sampah dalam jumlah banyakk ya memang dia ngambilin sampahh wargaa tapi warga juga membayar tapi kok malah di bakarr di Deket rumahnya yaa soalnya mengganggu dann membuat pencemaran udara sekitar
+                </td>
+                <td class="px-4 py-4">
+                  <span class="inline-block px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs font-semibold">Diproses</span>
+                </td>
+                <td class="px-4 py-4">
+                  <i class="bi bi-eye text-xl inline-flex items-center justify-center bg-gray-200 w-12 h-8 rounded-full cursor-pointer"
+                    onclick='openModal({
+                        nama: "Siti Aminah",
+                        email: "siti@gmail.com",
+                        telepon: "082112345678",
+                        kategori: "Aduan",
+                        gambar: "assets/gambar_aduan.jpg",
+                        deskripsi: "Kak di dekat rumah saya ada tetangga bakar sampah besar-besaran, mengganggu dan mencemari udara."
+                    })'></i>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-4">2</td>
+                <td class="px-4 py-4">Aduan</td>
+                <td class="px-4 py-4">
+                  Selamat pagi pak/ibu, ijin menanyakan berkas pengajuan ijin operasional lembaga PAUD kami apakah sudah masuk?kami memasukkan di tanggal 5 Mei 2025, terima kasih
+                </td>
+                <td class="px-4 py-4">
+                  <span class="inline-block px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-semibold">Selesai</span>
+                </td>
+                <td class="px-4 py-4">
+                  <i class="bi bi-eye text-xl inline-flex items-center justify-center bg-gray-200 w-12 h-8 rounded-full cursor-pointer"
+                onclick='openModal({
+                    nama: "Siti Aminah",
+                    email: "siti@gmail.com",
+                    telepon: "082112345678",
+                    kategori: "Aduan",
+                    gambar: "assets/gambar_aduan.jpg",
+                    deskripsi: "Selamat pagi pak/ibu, ijin menanyakan berkas pengajuan ijin operasional lembaga PAUD kami apakah sudah masuk?kami memasukkan di tanggal 5 Mei 2025, terima kasih"
+                })'></i>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  function openModal(data) {
+    document.getElementById('modalNama').textContent = data.nama;
+    document.getElementById('modalEmail').textContent = data.email;
+    document.getElementById('modalTelepon').textContent = data.telepon;
+    document.getElementById('modalKategori').textContent = data.kategori;
+    document.getElementById('modalDeskripsi').textContent = data.deskripsi;
+    document.getElementById('modalGambar').src = data.gambar;
+
+    document.getElementById('detailModal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('detailModal').classList.add('hidden');
+  }
+</script>
+
 </body>
 </html>
