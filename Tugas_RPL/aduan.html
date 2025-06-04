@@ -1,3 +1,47 @@
+<?php 
+session_start();
+
+if (!isset($_SESSION['email'])) {
+  header('location: index.php');
+  exit();
+}
+
+require 'konek.php';
+$loggedIn = isset($_SESSION['email']);
+
+if(isset($_POST['add_aduan'])) {
+  $nama_pengadu = mysqli_real_escape_string($conn, $_POST['nama_pengadu']);
+  $email = mysqli_real_escape_string($conn, $_POST['email']);
+  $no_telepon = mysqli_real_escape_string($conn, $_POST['no_telepon']);
+  $kategori = mysqli_real_escape_string($conn, $_POST['kategori']);
+  $deskripsi = mysqli_real_escape_string($conn, $_POST['deskripsi']);
+
+
+  $allowed_extension = array('png', 'jpg');
+  $nama = $_FILES['file']['name'];
+  $dot = explode('.', $nama);
+
+  $ekstensi = strtolower(end($dot));
+  $ukuran = $_FILES['file']['size'];
+  $file_tmp = $_FILES['file']['tmp_name'];
+  $image = md5(uniqid($nama, true) . time()).'.'.$ekstensi; 
+
+  if(in_array($ekstensi, $allowed_extension) === true){
+    if($ukuran < 15000000){
+        move_uploaded_file($file_tmp, 'img/'.$image);
+
+        $add_to_aduan = mysqli_query($conn, "insert into aduan(nama_pengadu, email, no_telepon, id_kategori, deskripsi, lampiran) values('$nama_pengadu', '$email', '$no_telepon', '$kategori', '$deskripsi', '$image')");
+        if($add_to_aduan){
+          header('location:aduan.php');
+        } else {
+          echo 'Gagal';
+          header('location:aduan.php');
+        }
+      }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,80 +49,110 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Form Pengaduan</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 <body class="bg-white text-slate-800">
 
-  <section class="flex flex-col md:flex-row min-h-screen">
+<!-- Modal Keluar Halaman -->
+<div id="logoutPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
+    <p class="mb-8">Apakah Anda yakin ingin keluar?</p>
+    <div class="flex justify-center gap-4">
+      <button onclick="closeLogoutPopup()" class="px-6 py-2 bg-[#61B3FF] text-white rounded hover:bg-blue-500">Batal</button>
+      <a href="keluar.php" class="px-9 py-2 bg-red-600 text-white rounded hover:bg-red-700">Ya</a>
+    </div>
+  </div>
+</div>
 
-    <!-- Sidebar -->
-    <div class="bg-slate-800 w-full md:w-72 p-4 rounded-none md:rounded-r-xl">
-      <nav class="flex flex-col w-full md:py-5 py-2 px-4 text-white">
-        <div class="flex mb-5 gap-3 items-center">
-          <img src="assets/logo_Basdat.png" class="w-11 h-11">
-          <h1 class="md:text-3xl text-2xl font-semibold">Sidebar</h1>
+
+  <section class="flex flex-col md:flex-row min-h-screen">
+    <div class="bg-[#363636] w-full md:w-44 p-4">
+      <nav class="flex flex-col justify-between w-full md:py-5 py-2 px-4 min-h-screen text-white">
+
+      <div>
+        <div class="flex mb-5 gap-3 justify-center items-center">
+          <img src="assets/logo_Basdat.png" class="w-16 h-16">
         </div>
-        <ul class="md:flex flex md:flex-col justify-center flex-row md:gap-4 gap-2">
-          <li><a class="flex md:border-none border border-gray-100/10 font-medium md:text-[17px] text-sm px-4 py-2 md:py-3 rounded transition-all duration-200 hover:bg-gray-200 hover:text-slate-800" href="#">Beranda</a></li>
-          <li><a class="flex md:border-none border border-gray-100/10 font-medium md:text-[17px] text-sm px-4 py-2 md:py-3 rounded transition-all duration-200 bg-gray-200 text-slate-800" href="aduan.html">Aduan</a></li>
-          <li><a class="flex md:border-none border border-gray-100/10 font-medium md:text-[17px] text-sm px-4 py-2 md:py-3 rounded transition-all duration-200 hover:bg-gray-200 hover:text-slate-800" href="riwayat_aduan.html">Riwayat</a></li>
+        <ul class="flex md:flex-col justify-center flex-row md:gap-4 gap-2">
+          <li><a class="flex md:border-none border border-gray-100/10 font-medium md:text-[17px] text-sm px-4 py-2 md:py-3 rounded transition-all duration-200 hover:bg-gray-200 hover:text-slate-800" href="index.php">Beranda</a></li>
+          <li><a class="flex md:border-none border border-gray-100/10 font-medium md:text-[17px] text-sm px-4 py-2 md:py-3 rounded transition-all duration-200 bg-gray-200 text-slate-800" href="aduan.php">Aduan</a></li>
+          <li><a class="flex md:border-none border border-gray-100/10 font-medium md:text-[17px] text-sm px-4 py-2 md:py-3 rounded transition-all duration-200 hover:bg-gray-200 hover:text-slate-800" href="riwayat_aduan.php">Riwayat</a></li>
         </ul>
+      </div>
+        
+
+      <div class="pb-8">
+        <button onclick="openLogoutPopup()" class="text-red-600 px-4 ">Keluar</button>
+      </div>
       </nav>
     </div>
 
-    <!-- Main Content -->
     <div class="flex-1 p-4 md:my-0 my-6 md:p-10 flex flex-col gap-6">
       <div class="text-center flex flex-col gap-3">
-        <h1 class="text-2xl md:text-3xl font-semibold text-[#333446]">FORM PENGADUAN</h1>
-        <div class="border-b-4 border-orange-600 w-28 mx-auto my-2"></div>
+        <h1 class="text-2xl md:text-3xl font-semibold text-[#333446]">ADUAN</h1>
       </div>
 
       <div class="max-w-4xl w-full mx-auto flex flex-col gap-4 px-2">
-        <p class="text-gray-500 text-sm md:text-base">
-          Silahkan mengisi fasilitas komunikasi Lapor kami. Mohon masukan dan pertanyaan disampaikan secara bijak dengan kata-kata yang baik. Komentar yang berupa spam, kata-kata kotor, link tidak bermanfaat tidak akan kami tampilkan.
+        <p class="text-gray-500 text-sm md:text-base text-center">
+          Mohon masukan dan pertanyaan disampaikan secara bijak dengan kata-kata yang baik. Untuk komentar yang bersifat keluhan atau pertanyaan dan memerlukan jawaban, akan segera kami tanggapi, kecuali keluhan/pertanyaan yang memerlukan koordinasi dengan instansi yang berwenang.
         </p>
 
-        <form action="#" method="POST" enctype="multipart/form-data" class="space-y-6 mt-4">
-          <div>
-            <label for="nama" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-            <input type="text" id="nama" name="nama" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none" placeholder="Masukkan nama Anda">
-          </div>
-
+        <form action="" method="POST" enctype="multipart/form-data" class="space-y-6 mt-4">
           <div class="flex flex-col md:flex-row gap-4">
             <div class="flex-1">
-              <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+              <label for="nama_pengadu" class="block text-sm font-medium text-gray-700">Nama Lengkap*</label>
+              <input type="text" id="nama_pengadu" name="nama_pengadu" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none" placeholder="Masukkan nama Anda">
+            </div>      
+            <div class="flex-1">
+              <label for="email" class="block text-sm font-medium text-gray-700">Email*</label>
               <input type="email" id="email" name="email" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none" placeholder="Masukan email Anda">
             </div>
-            <div class="flex-1">
-              <label for="telepon" class="block text-sm font-medium text-gray-700">Nomor Telepon</label>
-              <input type="tel" id="telepon" name="telepon" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none" placeholder="08xxxxxxxxxx">
+          </div>
+          
+            <div class="flex flex-col md:flex-row gap-4">
+              <div class="flex-1">
+                <label for="no_telepon" class="block text-sm font-medium text-gray-700">Nomor Handphone*</label>
+                <input type="tel" id="no_telepon" name="no_telepon" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none" placeholder="08xxxxxxxxxx">
+              </div>
+
+              <div class="flex-1">
+              <label for="kategori" class="block text-sm font-medium text-gray-700">Kategori*</label>
+              <select id="kategori" name="kategori" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none">
+                <option value="">--Pilih Kategori--</option>
+                <?php
+
+                $dataKategori = mysqli_query($conn, "SELECT * FROM kategori");
+                while($fetcharray = mysqli_fetch_array($dataKategori)){
+                  $nama_kategori = $fetcharray['nama_kategori'];
+                  $id_kategori = $fetcharray['id_kategori'];
+                  ?>
+                  <option value="<?=$id_kategori;?>"><?=$nama_kategori;?></option>
+                  <?php
+                }
+
+                ?>
+              </select>
             </div>
           </div>
 
           <div>
-            <label for="judul" class="block text-sm font-medium text-gray-700">Kategori</label>
-            <select id="judul" name="judul" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none">
-              <option value="">--Pilih Kategori--</option>
-              <option value="Keluhan">Keluhan</option>
-              <option value="Saran">Saran</option>
-            </select>
+            <label for="deskripsi" class="block text-sm font-medium text-gray-700">Deskripsi*</label>
+            <textarea id="deskripsi" name="deskripsi" rows="4" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none" placeholder="Tulis pengaduan Anda di sini..."></textarea>
           </div>
 
           <div>
-            <label for="gambar" class="block text-sm font-medium text-gray-700">Lampiran</label>
-            <input type="file" id="gambar" name="gambar" accept="image/*" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none">
-          </div>
-
-          <div>
-            <label for="isi" class="block text-sm font-medium text-gray-700">Isi Pengaduan</label>
-            <textarea id="isi" name="isi" rows="4" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none" placeholder="Tulis pengaduan Anda di sini..."></textarea>
+            <label for="file" class="block text-sm font-medium text-gray-700">Lampiran (foto pendukung)</label>
+            <input type="file" id="file" name="file" accept=".jpg, .jpeg, .png" required class="mt-1 block w-full rounded-md border p-2 border-gray-300 shadow-sm outline-none">
           </div>
 
           <div class="text-center">
-            <button type="submit" class="bg-orange-600 text-white px-6 py-2 rounded-md hover:bg-orange-700 transition">Kirim Pengaduan</button>
+            <button type="submit" name="add_aduan" class="bg-[#61B3FF] text-white px-10 py-2 rounded-md hover:bg-[#4d9ce6] transition">Kirim</button>
           </div>
         </form>
       </div>
     </div>
   </section>
+
+  <script src="script.js"></script>
 </body>
 </html>
